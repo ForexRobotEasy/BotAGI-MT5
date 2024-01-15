@@ -1,0 +1,82 @@
+
+// Developer: Forex Robot Easy Team
+// Website: forexroboteasy.com
+
+// BotAGI MT5 - Trading Robot
+
+// Include necessary libraries and headers
+#include <Trade\Trade.mqh>
+#include <Technical\Indicators\Indicators.mqh>
+
+// Declare global variables
+int magicNumber = 123456;  // Magic number for identifying trades
+int slippage = 5;  // Maximum allowed slippage in pips
+
+// Function to analyze the Forex market using indicators and algorithms
+void analyzeMarket()
+{
+    // Add your code to analyze the market using indicators and algorithms
+    // Example: Calculate moving averages and check for crossovers
+    double maFast = iMA(NULL, 0, 10, 0, MODE_SMA, PRICE_CLOSE, 0);
+    double maSlow = iMA(NULL, 0, 20, 0, MODE_SMA, PRICE_CLOSE, 0);
+    
+    // Check for a bullish crossover
+    if (maFast > maSlow)
+    {
+        // Execute a buy trade if no open positions exist
+        if (PositionsTotal() == 0)
+        {
+            double lotSize = 0.01;  // Specify the lot size for the trade
+            double stopLoss = Bid - 100 * Point;  // Set stop loss 100 pips below the current price
+            double takeProfit = Bid + 200 * Point;  // Set take profit 200 pips above the current price
+            
+            // Execute the buy trade
+            if (OrderSend(Symbol(), OP_BUY, lotSize, Bid, slippage, stopLoss, takeProfit, 'Buy Trade', magicNumber))
+            {
+                Print('Buy trade executed successfully');
+            }
+            else
+            {
+                Print('Error executing buy trade: ', GetLastError());
+            }
+        }
+    }
+    // Check for a bearish crossover
+    else if (maFast < maSlow)
+    {
+        // Execute a sell trade if no open positions exist
+        if (PositionsTotal() == 0)
+        {
+            double lotSize = 0.01;  // Specify the lot size for the trade
+            double stopLoss = Ask + 100 * Point;  // Set stop loss 100 pips above the current price
+            double takeProfit = Ask - 200 * Point;  // Set take profit 200 pips below the current price
+            
+            // Execute the sell trade
+            if (OrderSend(Symbol(), OP_SELL, lotSize, Ask, slippage, stopLoss, takeProfit, 'Sell Trade', magicNumber))
+            {
+                Print('Sell trade executed successfully');
+            }
+            else
+            {
+                Print('Error executing sell trade: ', GetLastError());
+            }
+        }
+    }
+}
+
+// Function to execute trades automatically based on market analysis
+void executeTrades()
+{
+    // Add your code to continuously analyze the market and execute trades
+    while (true)
+    {
+        analyzeMarket();
+        Sleep(5000);  // Wait for 5 seconds before analyzing the market again
+    }
+}
+
+// Entry point of the program
+void OnStart()
+{
+    executeTrades();
+}
